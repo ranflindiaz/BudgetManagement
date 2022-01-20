@@ -57,8 +57,9 @@ namespace BudgetManagement.Services
         {
             using var connection = new SqlConnection(connectionString);
             return await connection.QueryFirstOrDefaultAsync<AccountType>(
-                @"Select Id, Name, Orden From AccountsTypes " +
-                "Where Id = @Id and UserId = @UserId",
+                @"Select Id, Name, Orden 
+                From AccountsTypes 
+                Where Id = @Id AND UserId = @UserId",
                 new { id, userId });
         }
 

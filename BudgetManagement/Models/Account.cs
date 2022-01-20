@@ -19,5 +19,7 @@ namespace BudgetManagement.Models
 
         [StringLength(maximumLength: 1000)]
         public string Description { get; set; }
+
+        public string AccountType { get; set; }
     }
 }

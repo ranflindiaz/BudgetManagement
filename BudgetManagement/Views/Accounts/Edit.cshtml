@@ -1,17 +1,15 @@
 ﻿@model CreateAccountViewModel
 
 @{
-    ViewData["Title"] = "Create Account";
+    ViewData["Title"] = "Edit Account";
 }
 
 
-<h1>Create Account</h1>
-<h5>This refer to differents balances you have:
-    credit card, saving account, loan, etc.
-</h5>
+<h1>Account to Edit: @Model.Name</h1>
 
-<form asp-action="Create">
+<form asp-action="Edit">
     <div asp-validation-summary="ModelOnly"></div>
+    <input type="hidden" asp-for="Id"/>
 
     <div class="mb-3">
         <label asp-for="Name" class="form-label"></label>
