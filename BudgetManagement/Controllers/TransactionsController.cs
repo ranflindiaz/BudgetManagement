@@ -75,7 +75,7 @@ namespace BudgetManagement.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id, string returnUrl = null)
         {
             var userId = _usersServices.GetUserId();
 
@@ -87,7 +87,14 @@ namespace BudgetManagement.Controllers
             }
 
             await _transactionsRepository.Delete(id);
-            return RedirectToAction(nameof(Index));
+            if (string.IsNullOrEmpty(returnUrl))
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                return LocalRedirect(returnUrl);
+            }
         }
 
         //Get accounts base on userId
@@ -112,7 +119,7 @@ namespace BudgetManagement.Controllers
             return Ok(categories);
         }
 
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(int id, string returnUrl = null)
         {
             var userId = _usersServices.GetUserId();
             var transaction =await _transactionsRepository.GetById(id, userId);
@@ -134,6 +141,7 @@ namespace BudgetManagement.Controllers
             model.PreviousAccountId = transaction.AccountId;
             model.Categories = await GetCategories(userId, transaction.OperationTypeId);
             model.Accounts = await GetAccounts(userId);
+            model.ReturnUrl = returnUrl;
 
             return View(model);
         }
@@ -172,10 +180,14 @@ namespace BudgetManagement.Controllers
             await _transactionsRepository.Update(transaction, model.PreviousAmount,
                 model.PreviousAccountId);
 
-            return RedirectToAction(nameof(Index));
-            
+            if (string.IsNullOrEmpty(model.ReturnUrl))
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                return LocalRedirect(model.ReturnUrl);
+            }
         }
-
-
     }
 }

@@ -27,5 +27,9 @@ namespace BudgetManagement.Models
 
         [Display(Name = "Operation Type")]
         public OperationType OperationTypeId { get; set; } = OperationType.Income;
+
+        public string Account { get; set; }
+
+        public string Category { get; set; }
     }
 }

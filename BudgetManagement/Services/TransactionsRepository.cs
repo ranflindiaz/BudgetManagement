@@ -31,6 +31,21 @@ namespace BudgetManagement.Services
             transaction.Id = id;
         }
 
+        public async Task<IEnumerable<Transaction>> GetByAccoundId(GetTransactionsByAccount model)
+        {
+            using var connection = new SqlConnection(connectionString);
+            return await connection.QueryAsync<Transaction>
+                (@"Select t.Id, t.Amount, t.TransactionDate, c.Name as Category,
+                ac.Name as Account, c.OperationTypeId
+                From Transactions t
+                Inner Join Categories c
+                On c.Id = t.CategoryId
+                Inner join Accounts ac
+                On ac.Id = t.AccountId
+                Where t.AccountId = @AccountId And t.UserId = @UserId 
+                And TransactionDate Between @InitialDate And @EndDate", model);
+        }
+
         public async Task Update(Transaction transaction, decimal previousAmount,
             int previousAccountId)
         {
