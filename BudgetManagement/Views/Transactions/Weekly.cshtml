@@ -1,0 +1,54 @@
+﻿@model WeeklyReportViewModel
+
+@{
+    ViewData["Title"] = "Weekly Report";
+
+    string DateFormat(DateTime date)
+    {
+        return date.ToString("MM-dd");
+    }
+
+    var amountSumary = new AmountSumaryViewModel()
+    {
+        Income = Model.Income,
+        Spending = Model.Spending,
+        Total = Model.Total
+    };
+}
+
+<partial name="_Submenu" model="TransactionsSubMenu.Weekly"/>
+
+<partial name="_NavigateByMonths" model="@Model.ReferenceDate"/>
+
+<partial name="_AmountSumary" model="@amountSumary"/>
+
+
+<table class="table" style:"font-size 20px;">
+    <thead>
+        <tr>
+            <th>Week</th>
+            <th style="text-align: right">Income</th>
+            <th style="text-align: right">Spending</th>
+        </tr>
+    </thead>
+    @foreach (var weeklyTransaction in Model.WeeklyTransactions)
+    {
+        <tr>
+            <td>
+                <a style="text-decoration: none" asp-action="Index"
+                asp-route-year="@Model.ReferenceDate.Year"
+                asp-route-month="@Model.ReferenceDate.Month">
+                @DateFormat(weeklyTransaction.InitialDate) ~ 
+                @DateFormat(weeklyTransaction.EndDate)
+                </a>
+            </td>
+            <td class="activo" style="text-align: right">
+                @weeklyTransaction.Income
+            </td>
+            <td class="pasivo" style="text-align: right">
+                @weeklyTransaction.Spending
+            </td>
+        </tr>
+    }
+
+</table>

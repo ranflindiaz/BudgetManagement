@@ -42,7 +42,7 @@ namespace BudgetManagement.Services
         {
             using var connection = new SqlConnection(connectionString);
             return await connection.QueryFirstOrDefaultAsync<Account>(
-                @"Select Accounts.Id, Accounts.Name, Balance, Description, tc.Id
+                @"Select Accounts.Id, Accounts.Name, Balance, Description, AccountTypeId
                 From Accounts
                 Inner join AccountsTypes tc
                 On tc.Id = Accounts.AccountTypeId

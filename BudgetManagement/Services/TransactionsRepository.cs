@@ -46,6 +46,23 @@ namespace BudgetManagement.Services
                 And TransactionDate Between @InitialDate And @EndDate", model);
         }
 
+        //get transactions by day and by userId
+        public async Task<IEnumerable<Transaction>> GetByUserId(GetTransactionsParameterByUser model)
+        {
+            using var connection = new SqlConnection(connectionString);
+            return await connection.QueryAsync<Transaction>
+                (@"Select t.Id, t.Amount, t.TransactionDate, c.Name as Category,
+                ac.Name as Account, c.OperationTypeId
+                From Transactions t
+                Inner Join Categories c
+                On c.Id = t.CategoryId
+                Inner join Accounts ac
+                On ac.Id = t.AccountId
+                Where t.UserId = @UserId 
+                And TransactionDate Between @InitialDate And @EndDate
+                Order By t.TransactionDate DESC", model);
+        }
+
         public async Task Update(Transaction transaction, decimal previousAmount,
             int previousAccountId)
         {
@@ -74,6 +91,34 @@ namespace BudgetManagement.Services
                 On cat.Id = Transactions.CategoryId
                 Where Transactions.Id = @Id And Transactions.UserId = @UserId",
                 new { id, userId});
+        }
+
+        public async Task<IEnumerable<GetByWeekResult>> GetByWeek(GetTransactionsParameterByUser model)
+        {
+            using var connection = new SqlConnection(connectionString);
+            return await connection.QueryAsync<GetByWeekResult>(
+                @"Select DATEDIFF(D, @initialDate, TransactionDate) / 7 + 1 as Week,
+                SUM(Amount) as Amount, cat.OperationTypeId
+                From Transactions
+                Inner Join Categories cat
+                On cat.Id = Transactions.CategoryId
+                Where Transactions.UserId = @userId And
+                TransactionDate Between @initialDate And @endDate
+                Group By DATEDIFF(D, @initialDate, TransactionDate) / 7, cat.OperationTypeId", model);
+        }
+
+        public async Task<IEnumerable<GetByMonthResult>> GetByMonth(int userId, int year)
+        {
+            var connection = new SqlConnection(connectionString);
+            return await connection.QueryAsync<GetByMonthResult>(
+                @"Select MONTH(TransactionDate) as month,
+                Sum(Amount) as Amount, cat.OperationTypeId
+                From Transactions
+                Inner Join Categories cat
+                On cat.Id = Transactions.CategoryId
+                wHERE Transactions.UserId = @userId And Year(TransactionDate) = @year
+                Group By Month(TransactionDate), cat.OperationTypeId", 
+                new { userId, year });
         }
 
         public async Task Delete(int id)

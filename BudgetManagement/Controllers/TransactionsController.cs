@@ -13,19 +13,138 @@ namespace BudgetManagement.Controllers
         private readonly ICategoryRepository _categoryRepository;
         private readonly ITransactionsRepository _transactionsRepository;
         private readonly IMapper _mapper;
+        private readonly IReportsService _reportsService;
 
         public TransactionsController(IUsersServices usersServices, IAccountsRepository accountsRepository, ICategoryRepository categoryRepository,
             ITransactionsRepository transactionsRepository,
-            IMapper mapper)
+            IMapper mapper, IReportsService reportsService)
         {
             _usersServices = usersServices;
             _accountsRepository = accountsRepository;
             _categoryRepository = categoryRepository;
             _transactionsRepository = transactionsRepository;
             _mapper = mapper;
+            _reportsService = reportsService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index(int month, int year)
+        {
+            var userId = _usersServices.GetUserId();
+
+            var model = await _reportsService.GetTransactionsDetailedReport(userId, month, year, ViewBag);
+
+            return View(model);
+        }
+
+        public async Task<IActionResult> Weekly(int month, int year)
+        {
+            var userId = _usersServices.GetUserId();
+            IEnumerable<GetByWeekResult> transactionByWeek = 
+                await _reportsService.GetByWeek(userId, month, year, ViewBag);
+
+            var grouped = transactionByWeek.GroupBy(x => x.Week).Select(x => new GetByWeekResult()
+                {
+                    Week = x.Key,
+                    Income = x.Where(x => x.OperationTypeId ==
+                    OperationType.Income).Select(x => x.Amount).FirstOrDefault(),
+                    Spending = x.Where(x => x.OperationTypeId ==
+                    OperationType.Spending).Select(x => x.Amount).FirstOrDefault()
+                }).ToList();
+
+            if (year == 0 || month ==0)
+            {
+                var today = DateTime.Today;
+                year = today.Year;
+                month = today.Month;
+            }
+
+            var referenceDate  = new DateTime(year, month, 1);
+            var dayOfTheMonth = Enumerable.Range(1, referenceDate.AddMonths(1).AddDays(-1).Day);
+
+            var segementedDays = dayOfTheMonth.Chunk(7).ToList();
+
+            //Iterating segementedDays and creating weekdays by week
+            for (int i = 0; i < segementedDays.Count(); i++)
+            {
+                var week = i + 1;
+                var initialDate = new DateTime(year, month, segementedDays[i].First());
+                var endDate = new DateTime(year, month, segementedDays[i].Last());
+                var weekGroup = grouped.FirstOrDefault(x => x.Week == week);
+
+                if (weekGroup is null)
+                {
+                    grouped.Add(new GetByWeekResult()
+                    {
+                        Week = week,
+                        InitialDate = initialDate,
+                        EndDate = endDate
+                    });
+                }
+                else
+                {
+                    weekGroup.InitialDate = initialDate;
+                    weekGroup.EndDate = endDate;
+                }
+            }
+
+            grouped = grouped.OrderByDescending(x => x.Week).ToList();
+
+            var model = new WeeklyReportViewModel();
+            model.WeeklyTransactions = grouped;
+            model.ReferenceDate = referenceDate;
+
+            return View(model);
+        }
+
+        public async Task<IActionResult> Monthly(int year)
+        {
+            var userId = _usersServices.GetUserId();
+
+            if (year == 0)
+            {
+                year = DateTime.Today.Year;
+            }
+
+            var transactionsByMonth = await _transactionsRepository.GetByMonth(userId, year);
+
+            var groupedTransactions = transactionsByMonth.GroupBy(x => x.Month).Select(x => new GetByMonthResult()
+            {
+                Month = x.Key,
+                Income = x.Where(x => x.OperationTypeId == OperationType.Income).Select(x => x.Amount).FirstOrDefault(),
+                Spending = x.Where(x => x.OperationTypeId == OperationType.Spending).Select(x => x.Amount).FirstOrDefault()
+            }).ToList();
+
+            for (int month = 1; month <= 12; month++)
+            {
+                var transaction = groupedTransactions.FirstOrDefault(x => x.Month == month);
+                var referenceDate = new DateTime(year, month, 1);
+                if (transaction is null)
+                {
+                    groupedTransactions.Add(new GetByMonthResult()
+                    {
+                        Month = month,
+                        ReferenceDate = referenceDate
+                    });
+                }
+                else
+                {
+                    transaction.ReferenceDate = referenceDate;
+                }
+            }
+
+            groupedTransactions = groupedTransactions.OrderByDescending(x => x.Month).ToList();
+
+            var model = new MonthlyReportViewModel();
+            model.Year = year;
+            model.MonthlyTransactions = groupedTransactions;
+
+            return View(model);
+        }
+        public IActionResult ReportExcel()
+        {
+            return View();
+        }
+        public IActionResult Calendar()
         {
             return View();
         }

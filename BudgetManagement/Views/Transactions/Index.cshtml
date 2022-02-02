@@ -1,7 +1,14 @@
-﻿
+﻿@model DetailedTransactionsReport
 
 @{
-    ViewData["Title"] = "Transactions";
+    ViewData["Title"] = "Daily Report";
 }
 
-<h1>Transactions Index page</h1>
+
+<partial name="_Submenu" model="TransactionsSubMenu.Daily"/>
+
+<div class="mb-3">
+    <a class="btn btn-outline-primary" asp-action="Create">Create a new Transaction</a>
+</div>
+
+<partial name="_TransactionsDetailedReport" model="Model" />
