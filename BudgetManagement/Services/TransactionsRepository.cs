@@ -52,7 +52,7 @@ namespace BudgetManagement.Services
             using var connection = new SqlConnection(connectionString);
             return await connection.QueryAsync<Transaction>
                 (@"Select t.Id, t.Amount, t.TransactionDate, c.Name as Category,
-                ac.Name as Account, c.OperationTypeId
+                ac.Name as Account, c.OperationTypeId, t.Note
                 From Transactions t
                 Inner Join Categories c
                 On c.Id = t.CategoryId
