@@ -2,10 +2,12 @@
 
 namespace BudgetManagement.Models
 {
-    public class RegisterViewModel
+    public class LoginViewModel
     {
-        [Required(ErrorMessage ="The field {0} is required")]
-        [EmailAddress(ErrorMessage ="Field should be a valid email address")]
+        public bool Remember { get; set; }
+
+        [Required(ErrorMessage = "The field {0} is required")]
+        [EmailAddress(ErrorMessage = "Field should be a valid email address")]
         public string Email { get; set; }
 
         [Required(ErrorMessage = "The field {0} is required")]
