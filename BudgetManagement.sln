@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BudgetManagement", "BudgetManagement\BudgetManagement.csproj", "{D0890F72-C464-4EF9-A6A8-A32C45E4C3C8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BudgetManagement", "BudgetManagement\BudgetManagement.csproj", "{D0890F72-C464-4EF9-A6A8-A32C45E4C3C8}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DB", "DB\DB.sqlproj", "{D64199E8-16A2-4B4B-9647-6F83E679948B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,12 @@ Global
 		{D0890F72-C464-4EF9-A6A8-A32C45E4C3C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0890F72-C464-4EF9-A6A8-A32C45E4C3C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0890F72-C464-4EF9-A6A8-A32C45E4C3C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D64199E8-16A2-4B4B-9647-6F83E679948B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D64199E8-16A2-4B4B-9647-6F83E679948B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D64199E8-16A2-4B4B-9647-6F83E679948B}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{D64199E8-16A2-4B4B-9647-6F83E679948B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D64199E8-16A2-4B4B-9647-6F83E679948B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D64199E8-16A2-4B4B-9647-6F83E679948B}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
